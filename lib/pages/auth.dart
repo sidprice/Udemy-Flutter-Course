@@ -8,9 +8,12 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  String _email = '';
-  String _password = '';
-  bool _acceptTerms = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final Map<String, dynamic> _formData = {
+    'email': null,
+    'password': null,
+    'acceptTerms': false,
+  };
 
   DecorationImage _buildBackgroundImage() {
     return DecorationImage(
@@ -21,38 +24,45 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   Widget _buildEmailTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
           labelText: 'Email Address', filled: true, fillColor: Colors.white),
       keyboardType: TextInputType.emailAddress,
-      onChanged: (String value) {
-        setState(() {
-          _email = value;
-        });
+      validator: (String value) {
+        if (value.isEmpty ||
+            !RegExp(r"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+                .hasMatch(value)) {
+          return 'Please enter a valid email address';
+        }
+      },
+      onSaved: (String value) {
+        _formData['email'] = value;
       },
     );
   }
 
   Widget _buildPasswordTextField() {
-    return TextField(
+    return TextFormField(
       decoration: InputDecoration(
           labelText: 'Password', filled: true, fillColor: Colors.white),
       obscureText: true,
-      onChanged: (String value) {
-        setState(() {
-          _password = value;
-        });
+      validator: (String value) {
+        if (value.isEmpty || value.length < 6) {
+          return 'Password must be at least 6 characters long';
+        }
+      },
+      onSaved: (String value) {
+        _formData['password'] = value;
       },
     );
   }
 
   Widget _buildAcceptSwitch() {
     return SwitchListTile(
-      subtitle: Text("Who knows"),
-      value: _acceptTerms,
+      value: _formData['acceptTerms'],
       onChanged: (bool value) {
         setState(() {
-          _acceptTerms = value;
+          _formData['acceptTerms'] = value;
         });
       },
       title: Text("Accept Terms"),
@@ -60,28 +70,30 @@ class _AuthPageState extends State<AuthPage> {
   }
 
   void _submitForm() {
-    if ((_email != '') && (_password != '')) {
-      print('User Name -> ' + _email);
-      print('Pssword -> ' + _password);
-      Navigator.pushReplacementNamed(context, '/products');
+    if (!_formKey.currentState.validate() || _formData['acceptTerms'] != true) {
+      return;
     }
+    _formKey.currentState.save();
+    Navigator.pushReplacementNamed(context, '/products');
   }
 
   @override
   Widget build(BuildContext context) {
-    final double deviceWidth = MediaQuery.of(context).size.width ;
-    final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95 ;
+    final double deviceWidth = MediaQuery.of(context).size.width;
+    final double targetWidth = deviceWidth > 550.0 ? 500.0 : deviceWidth * 0.95;
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Login'),
-        ),
-        body: Container(
-          decoration: BoxDecoration(image: _buildBackgroundImage()),
-          padding: EdgeInsets.all(10.0),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Container(
-                width: targetWidth,
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Container(
+        decoration: BoxDecoration(image: _buildBackgroundImage()),
+        padding: EdgeInsets.all(10.0),
+        child: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              width: targetWidth,
+              child: Form(
+                key: _formKey,
                 child: Column(
                   children: <Widget>[
                     _buildEmailTextField(),
@@ -101,6 +113,8 @@ class _AuthPageState extends State<AuthPage> {
               ),
             ),
           ),
-        ));
+        ),
+      ),
+    );
   }
 }
