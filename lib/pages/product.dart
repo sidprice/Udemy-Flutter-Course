@@ -1,39 +1,36 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../widgets/ui_elements/title_default.dart';
 
 class ProductPage extends StatelessWidget {
   final String title;
-
   final String imageURL;
+  final String description;
+  final double price;
+  final String address ;
 
-  ProductPage(this.title, this.imageURL);
+  ProductPage(this.title, this.imageURL, this.description, this.price, this.address);
 
-  _showWarningDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Are you sure?'),
-            content: Text('This action cannot be undone'),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('DISCARD'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              FlatButton(
-                child: Text('CONTINUE'),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context, true);
-                },
-              )
-            ],
-          );
-        });
+  Widget _buildAddressPriceRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          address,
+          style: TextStyle(fontFamily: 'Oswald', color: Colors.grey),
+        ),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: 5.0),
+          child: Text(
+            '|',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        Text('\$' + price.toString(),
+            style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)),
+      ],
+    ) ;
   }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
@@ -51,16 +48,16 @@ class ProductPage extends StatelessWidget {
             Image.asset(imageURL),
             Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Text(title),
+              child: TitleDefault(title),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: RaisedButton(
-                child: Text('Delete'),
-                color: Theme.of(context).accentColor,
-                onPressed: () => _showWarningDialog(context),
-              ),
-            )
+           _buildAddressPriceRow(),
+            Container(
+                margin: EdgeInsets.only(top: 5.0),
+                padding: EdgeInsets.all(10.0),
+                child: Text(
+                  description,
+                  textAlign: TextAlign.center,
+                )),
           ],
         ),
       ),
