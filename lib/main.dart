@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 import './pages/auth.dart';
 import 'pages/products_admin.dart';
@@ -37,8 +36,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
+        brightness: Brightness.light,
         primarySwatch: Colors.deepOrange,
         accentColor: Colors.deepPurple,
+        buttonColor: Colors.deepPurple,
       ),
       // home: AuthPage(),
       routes: {
@@ -56,7 +57,12 @@ class _MyAppState extends State<MyApp> {
           final int index = int.parse(pathElements[2]);
           return MaterialPageRoute<bool>(
               builder: (BuildContext context) => ProductPage(
-                  _products[index]['title'], _products[index]['image']));
+                    _products[index]['title'],
+                    _products[index]['image'],
+                    _products[index]['description'],
+                    _products[index]['price'],
+                    _products[index]['address'],
+                  ));
         }
         return null;
       },
