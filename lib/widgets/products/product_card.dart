@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+
 import './price_tag.dart';
 import '../ui_elements/title_default.dart';
 import '../products/address_tag.dart';
+import '../../models/product.dart';
+import '../../scoped_models/product.dart';
 
 class ProductCard extends StatelessWidget {
-  final Map<String, dynamic> product;
+  final Product product;
 
   final int productIndex;
 
@@ -16,11 +20,11 @@ class ProductCard extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TitleDefault(product['title']),
+            TitleDefault(product.title),
             SizedBox(
               width: 8.0,
             ),
-            PriceTag(product['price'].toString())
+            PriceTag(product.price.toString())
           ],
         ));
   }
@@ -34,22 +38,30 @@ class ProductCard extends StatelessWidget {
             color: Theme.of(context).accentColor,
             onPressed: () => Navigator.pushNamed<bool>(
                 context, '/product/' + productIndex.toString())),
-        IconButton(
-          icon: Icon(Icons.favorite_border),
-          color: Colors.red,
-          onPressed: () {},
+        ScopedModelDescendant<ProductsModel>(
+          builder: (BuildContext context, Widget child, ProductsModel model) {
+            return IconButton(
+              icon: Icon(model.products[productIndex].isFavorite ? Icons.favorite : Icons.favorite_border),
+              color: Colors.red,
+              onPressed: () {
+                model.selectProduct(productIndex);
+                model.toggleProductFavoriteStatus();
+              },
+            );
+          },
         )
       ],
-    ) ;
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     return Card(
       child: Column(
         children: <Widget>[
-          Image.asset(product['image']),
+          Image.asset(product.image),
           _buildTitlePriceRow(),
-          AddressTag(product['address']),
+          AddressTag('Union Square, San Fransisco'),
           _buildActionButtons(context),
         ],
       ),
