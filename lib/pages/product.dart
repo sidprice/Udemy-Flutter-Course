@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../widgets/ui_elements/title_default.dart';
-import '../scoped_models/product.dart';
 import '../models/product.dart';
+import '../scoped_models/connected_products.dart';
 
 class ProductPage extends StatelessWidget {
   final int productIndex ;
@@ -37,7 +37,7 @@ class ProductPage extends StatelessWidget {
       },
       child: ScopedModelDescendant(
         builder: (BuildContext context, Widget child, ProductsModel model) {
-          final Product product = model.products[productIndex] ;
+          final Product product = model.allProducts[productIndex] ;
           return Scaffold(
             appBar: AppBar(
               title: Text(product.title),
