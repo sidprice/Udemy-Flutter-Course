@@ -1,24 +1,21 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:scoped_model/scoped_model.dart';
+
 import '../widgets/ui_elements/title_default.dart';
+import '../models/product.dart';
+import '../scoped_models/connected_products.dart';
 
 class ProductPage extends StatelessWidget {
-  final String title;
-  final String imageURL;
-  final String description;
-  final double price;
-  final String address ;
+  final int productIndex ;
 
-  ProductPage(this.title, this.imageURL, this.description, this.price, this.address);
+  ProductPage(this.productIndex);
 
-  Widget _buildAddressPriceRow() {
+  Widget _buildAddressPriceRow(Product product) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(
-          address,
-          style: TextStyle(fontFamily: 'Oswald', color: Colors.grey),
-        ),
+        Text('Union Square, San Franscisco'),
         Container(
           margin: EdgeInsets.symmetric(horizontal: 5.0),
           child: Text(
@@ -26,7 +23,7 @@ class ProductPage extends StatelessWidget {
             style: TextStyle(color: Colors.grey),
           ),
         ),
-        Text('\$' + price.toString(),
+        Text('\$' + product.price.toString(),
             style: TextStyle(fontFamily: 'Oswald', color: Colors.grey)),
       ],
     ) ;
@@ -38,28 +35,33 @@ class ProductPage extends StatelessWidget {
         Navigator.pop(context, false);
         return Future.value(false);
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Image.asset(imageURL),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TitleDefault(title),
+      child: ScopedModelDescendant(
+        builder: (BuildContext context, Widget child, ProductsModel model) {
+          final Product product = model.allProducts[productIndex] ;
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(product.title),
             ),
-           _buildAddressPriceRow(),
-            Container(
-                margin: EdgeInsets.only(top: 5.0),
-                padding: EdgeInsets.all(10.0),
-                child: Text(
-                  description,
-                  textAlign: TextAlign.center,
-                )),
-          ],
-        ),
+            body: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Image.asset(product.image),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: TitleDefault(product.title),
+                ),
+                _buildAddressPriceRow(product),
+                Container(
+                    margin: EdgeInsets.only(top: 5.0),
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(
+                      product.description,
+                      textAlign: TextAlign.center,
+                    )),
+              ],
+            ),
+          ) ;
+        },
       ),
     );
   }
