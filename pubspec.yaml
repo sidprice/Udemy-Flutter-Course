@@ -22,6 +22,8 @@ dependencies:
   # The following adds the third party library that manages and facilitates
   # sharing of app state.
   scoped_model: ^1.0.1
+  # The following package is used for HTTP REST API in this app
+  http: ^0.12.0+1
 
 dev_dependencies:
   flutter_test:
