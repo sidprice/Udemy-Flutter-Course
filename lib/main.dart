@@ -6,6 +6,7 @@ import 'pages/products_admin.dart';
 import 'pages/products.dart';
 import 'pages/product.dart';
 
+import './models/product.dart';
 import 'scoped_models/main.dart';
 
 void main() {
@@ -21,10 +22,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
-    final MainModel model = MainModel() ;
+    final MainModel model = MainModel();
     return ScopedModel<MainModel>(
       model: model,
       child: MaterialApp(
@@ -37,8 +37,7 @@ class _MyAppState extends State<MyApp> {
         // home: AuthPage(),
         routes: {
           '/': (BuildContext context) => AuthPage(),
-          '/admin': (BuildContext context) =>
-              ProductAdminPage(),
+          '/admin': (BuildContext context) => ProductAdminPage(model),
           '/products': (BuildContext context) => ProductsPage(model),
         },
         onGenerateRoute: (RouteSettings settings) {
@@ -47,9 +46,13 @@ class _MyAppState extends State<MyApp> {
             return null;
           }
           if (pathElements[1] == 'product') {
-            final int index = int.parse(pathElements[2]);
+            final String productId = pathElements[2];
+            final Product product = model.allProducts.firstWhere((Product product) {
+              return product.id == productId ;
+            }) ;
             return MaterialPageRoute<bool>(
-                builder: (BuildContext context) => ProductPage(index));
+                builder: (BuildContext context) =>
+                    ProductPage(product, model));
           }
           return null;
         },
